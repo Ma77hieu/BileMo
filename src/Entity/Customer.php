@@ -6,6 +6,7 @@ use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
@@ -16,12 +17,18 @@ class Customer
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     private $username;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:8)]
+    #[Assert\Regex('[@$!%*#?&]')]//contains at least one special character
     private $password;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Email(message:'L\'adresse mail fournie n\'est pas un format valide')]
     private $email;
 
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: User::class)]

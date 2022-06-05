@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController
 {
@@ -89,13 +90,25 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{custId}', name: 'create_user', methods: 'PUT')]
-    public function createUser(ManagerRegistry $doctrine,$custId,Request $request,SerializerInterface $serializer):Response
+    public function createUser(ManagerRegistry $doctrine,$custId,Request $request,SerializerInterface $serializer,ValidatorInterface $validator):Response
     {
         $data=$request->getContent();
         $em=$doctrine->getManager();
         $userCreate=new User();
         $cust=$em->getRepository(Customer::class)->find($custId);
         $serializer->deserialize($data,User::class,'json',[AbstractNormalizer::OBJECT_TO_POPULATE => $userCreate]);
+        $errors=$validator->validate($userCreate);
+
+        if (count($errors) > 0) {
+            $errorsString = '';
+            foreach ($errors as $error) {
+                $errorsString = $error->getPropertyPath().": ";
+                $errorsString .= $error->getMessage();
+            }
+            $response=new Response($errorsString);
+            $response->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);
+            return $response;
+        }
         //TODO remove when auth is functionnal
         $userCreate->setCustomer($cust);
         $em->persist($userCreate);
