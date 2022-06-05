@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -37,6 +38,25 @@ class ProductRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getProductPage(int $firstResult,int $maxResult)
+    {
+        $qb=$this->createQueryBuilder('p');
+        $qb->setFirstResult($firstResult)
+            ->setMaxResults($maxResult);
+
+        /*$query = $qb->getQuery();*/
+        return new Paginator($qb, true);
+    }
+
+    public function getNbrOfproducts()
+    {
+        $qb=$this->createQueryBuilder('p');
+        $qb->select('count(p.id)');
+        $query=$qb->getQuery();
+
+        return $query->getSingleScalarResult();
     }
 
 //    /**
