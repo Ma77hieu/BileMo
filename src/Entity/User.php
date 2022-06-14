@@ -17,10 +17,16 @@ class User
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Regex(pattern: "/([@$!%*#?&;\/.,%£`'(){}0-9]+)$/",
+        match: false,
+        message: "Un prénom ne peut pas contenir de chiffre ou de caractère spécial.")]//does not contain any special character or number
     private $firstName;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Regex(pattern:"/([@$!%*#?&;\/.,%£`'(){}0-9]+)$/",
+        match:false,
+        message: "Un Nom de famille ne peut pas contenir de chiffre ou de caractère spécial.")]//does not contain any special character or number
     private $lastName;
 
     #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'users')]

@@ -102,8 +102,8 @@ class UserController extends AbstractController
         if (count($errors) > 0) {
             $errorsString = '';
             foreach ($errors as $error) {
-                $errorsString = $error->getPropertyPath().": ";
-                $errorsString .= $error->getMessage();
+                $errorsString .= $error->getPropertyPath().": ";
+                $errorsString .= $error->getMessage()." ";
             }
             $response=new Response($errorsString);
             $response->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);

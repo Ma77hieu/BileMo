@@ -21,7 +21,7 @@ class ProductController extends AbstractController
         $resultsPerPage=$request->query->get('perPage')?$request->query->get('perPage'):2;
         $offset=$request->query->get('page')?$request->query->get('page')-1:0;
         $maxPage=ceil($totalProducts/$resultsPerPage);
-        if ($maxPage<$offset){
+        if ($maxPage<=$offset){
             return $this->json("Impossible d'accéder à la page demandée, page maximale: $maxPage");
         }
         if ($offset<0){$offset=0;}
