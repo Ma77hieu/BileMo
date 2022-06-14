@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,6 +38,29 @@ class UserRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getUserPageOfCust(int $firstResult, int $maxResult, int $custId)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->leftJoin('u.customer', 'c')
+            ->where('c.id = :parameter')
+            ->setParameter('parameter', $custId);
+        $qb->setFirstResult($firstResult)
+            ->setMaxResults($maxResult);
+        return new Paginator($qb, true);
+    }
+
+    public function getNbrOfUsersOfCust($custId)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('count(u.id)');
+        $qb->leftJoin('u.customer', 'c')
+            ->where('c.id = :parameter')
+            ->setParameter('parameter', $custId);
+        $query = $qb->getQuery();
+
+        return $query->getSingleScalarResult();
     }
 
 //    /**
