@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Serializer\SerializerInterface;
 
 
 class ProductController extends AbstractController
@@ -37,6 +36,7 @@ class ProductController extends AbstractController
     {
         $em = $doctrine->getManager();
         $selectedProduct = $em->getRepository(Product::class)->find($id);
+
         return $this->json($selectedProduct);
     }
 }
