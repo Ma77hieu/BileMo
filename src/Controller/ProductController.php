@@ -28,7 +28,10 @@ class ProductController extends AbstractController
         }
         $firstResult = $offset * $resultsPerPage;
         $productList = $em->getRepository(Product::class)->getProductPage($firstResult, $resultsPerPage);
-        return $this->json($productList);
+        $response=$this->json($productList);
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        return $response;
     }
 
     #[Route('/product/{id}', name: 'details_product')]
@@ -36,7 +39,9 @@ class ProductController extends AbstractController
     {
         $em = $doctrine->getManager();
         $selectedProduct = $em->getRepository(Product::class)->find($id);
-
-        return $this->json($selectedProduct);
+        $response=$this->json($selectedProduct);
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        return $response;
     }
 }

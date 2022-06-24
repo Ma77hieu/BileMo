@@ -3,11 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Customer;
-use App\Entity\Product;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -52,6 +50,8 @@ class UserController extends AbstractController
         $serializer = new Serializer([$normalizer], [$encoder]);
         $jsonUsers = $serializer->serialize($usersList, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['customer']]);
         $response = new Response($jsonUsers);
+        $response->setPublic();
+        $response->setMaxAge(3600);
         return $response;
     }
 
@@ -81,6 +81,8 @@ class UserController extends AbstractController
             [AbstractNormalizer::IGNORED_ATTRIBUTES => ['customer']]
         );
         $response = new Response($jsonUser);
+        $response->setPublic();
+        $response->setMaxAge(3600);
         return $response;
     }
 
@@ -110,6 +112,8 @@ class UserController extends AbstractController
         $em->flush();
         $response = new Response();
         $response->setStatusCode(Response::HTTP_CREATED);
+        $response->setPublic();
+        $response->setMaxAge(3600);
         return $response;
     }
 
@@ -127,7 +131,8 @@ class UserController extends AbstractController
         } catch (\Exception $e) {
             $response->setStatusCode(Response::HTTP_NOT_FOUND);
         }
-
+        $response->setPublic();
+        $response->setMaxAge(3600);
         return $response;
     }
 }
