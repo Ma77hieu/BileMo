@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class ProductController extends AbstractController
 {
-    #[Route('/products', name: 'list_products')]
+    #[Route('/products', name: 'list_products', methods: 'GET')]
     public function index(ManagerRegistry $doctrine, Request $request): JsonResponse
     {
         $em = $doctrine->getManager();
@@ -29,19 +29,25 @@ class ProductController extends AbstractController
         $firstResult = $offset * $resultsPerPage;
         $productList = $em->getRepository(Product::class)->getProductPage($firstResult, $resultsPerPage);
         $response=$this->json($productList);
-        $response->setPublic();
-        $response->setMaxAge(3600);
+        //cache management
+        $response->setCache([
+            'public'           => true,
+            'max_age'          => 3600
+        ]);
         return $response;
     }
 
-    #[Route('/product/{id}', name: 'details_product')]
+    #[Route('/product/{id}', name: 'details_product', methods: 'GET')]
     public function productDetails(ManagerRegistry $doctrine, $id): JsonResponse
     {
         $em = $doctrine->getManager();
         $selectedProduct = $em->getRepository(Product::class)->find($id);
         $response=$this->json($selectedProduct);
-        $response->setPublic();
-        $response->setMaxAge(3600);
+        //cache management
+        $response->setCache([
+            'public'           => true,
+            'max_age'          => 3600
+        ]);
         return $response;
     }
 }

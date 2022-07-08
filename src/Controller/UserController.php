@@ -18,9 +18,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController
 {
-    #[Route('/users/{custId}', name: 'list_users')]
-    public function index(ManagerRegistry $doctrine, $custId, Request $request): Response
+    #[Route('/users', name: 'list_users', methods: 'GET')]
+    public function index(ManagerRegistry $doctrine, Request $request): Response
     {
+        $customer=$this->getUser();
+        $custId=$customer->getId();
         $em = $doctrine->getManager();
         $totalUsers = $em->getRepository(User::class)->getNbrOfUsersOfCust($custId);
         $resultsPerPage = $request->query->get('perPage') ? $request->query->get('perPage') : 2;
@@ -50,8 +52,11 @@ class UserController extends AbstractController
         $serializer = new Serializer([$normalizer], [$encoder]);
         $jsonUsers = $serializer->serialize($usersList, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['customer']]);
         $response = new Response($jsonUsers);
-        $response->setPublic();
-        $response->setMaxAge(3600);
+        //cache management
+        $response->setCache([
+            'public'           => true,
+            'max_age'          => 3600
+        ]);
         return $response;
     }
 
@@ -81,21 +86,29 @@ class UserController extends AbstractController
             [AbstractNormalizer::IGNORED_ATTRIBUTES => ['customer']]
         );
         $response = new Response($jsonUser);
-        $response->setPublic();
-        $response->setMaxAge(3600);
+        //cache management
+        $response->setCache([
+            'public'           => true,
+            'max_age'          => 3600
+        ]);
         return $response;
     }
 
-    #[Route('/user/{custId}', name: 'create_user', methods: 'PUT')]
-    public function createUser(ManagerRegistry $doctrine, $custId, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
+    #[Route('/user', name: 'create_user', methods: 'PUT')]
+    public function createUser(ManagerRegistry $doctrine, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
         $data = $request->getContent();
         $em = $doctrine->getManager();
         $userCreate = new User();
+        //get the authenticated user and the corresponding customer
+        $user = $this->getUser();
+        $custId=$user->getId();
+        //Associate the right customer to the new user
         $cust = $em->getRepository(Customer::class)->find($custId);
+        $userCreate->setCustomer($cust);
         $serializer->deserialize($data, User::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $userCreate]);
+        //validation error management
         $errors = $validator->validate($userCreate);
-
         if (count($errors) > 0) {
             $errorsString = '';
             foreach ($errors as $error) {
@@ -106,14 +119,9 @@ class UserController extends AbstractController
             $response->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);
             return $response;
         }
-        //TODO remove when auth is functionnal
-        $userCreate->setCustomer($cust);
         $em->persist($userCreate);
         $em->flush();
         $response = new Response();
-        $response->setStatusCode(Response::HTTP_CREATED);
-        $response->setPublic();
-        $response->setMaxAge(3600);
         return $response;
     }
 
@@ -131,8 +139,6 @@ class UserController extends AbstractController
         } catch (\Exception $e) {
             $response->setStatusCode(Response::HTTP_NOT_FOUND);
         }
-        $response->setPublic();
-        $response->setMaxAge(3600);
         return $response;
     }
 }
