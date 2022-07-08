@@ -1,0 +1,9 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: BileMo
+            description: API projet BileMo
+            version: 1.0.0
+    areas: # to filter documented areas
+        path_patterns:
+            - ^\/((?!_error)(?!api/doc)(?!customer).)*$
