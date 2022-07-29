@@ -1,7 +1,5 @@
-# BileMo
-BileMo API
+# BileMo API
 
------
 ### 1.Clone the repository
 run `https://github.com/Ma77hieu/BileMo.git`
 
