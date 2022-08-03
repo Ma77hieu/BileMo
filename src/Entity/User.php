@@ -5,7 +5,15 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+
+/**
+ * @Hateoas\Relation(
+ *     "related_customer",
+ *     href = "expr('/customer/' ~ object.getCustomer().getId())"
+ * )
+ */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 class User

@@ -11,6 +11,7 @@
         "doctrine/doctrine-bundle": "^2.6",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.12",
+        "jms/serializer-bundle": "^4.0",
         "lexik/jwt-authentication-bundle": "^2.16",
         "nelmio/api-doc-bundle": "^4.9",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -28,7 +29,8 @@
         "symfony/serializer": "6.0.*",
         "symfony/twig-bundle": "6.0.*",
         "symfony/validator": "6.0.*",
-        "symfony/yaml": "6.0.*"
+        "symfony/yaml": "6.0.*",
+        "willdurand/hateoas-bundle": "^2.4"
     },
     "require-dev": {
         "symfony/maker-bundle": "^1.43"

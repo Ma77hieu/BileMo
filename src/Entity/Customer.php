@@ -9,15 +9,26 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
+/**
+ * @ExclusionPolicy("all")
+ */
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    /**
+     * @Expose
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    /**
+     * @Expose
+     */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
     private $username;
@@ -28,6 +39,9 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Regex('[@$!%*#?&]')]//contains at least one special character
     private $password;
 
+    /**
+     * @Expose
+     */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
     #[Assert\Email(message:'L\'adresse mail fournie n\'est pas un format valide')]
