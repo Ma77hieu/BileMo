@@ -67,6 +67,11 @@ class UserController extends AbstractController
     {
         $em = $doctrine->getManager();
         $selectedUser = $em->getRepository(User::class)->find($userId);
+        if (gettype($userId)!='integer') {
+            $response = new JsonResponse('Merci d\'entrer un nombre entier en tant qu\'identifiant.');
+            $response->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);
+            return $response;
+        }
         $user = $this->getUser();
         $custId=$user->getId();
         $custLoggedUser=$em->getRepository(Customer::class)->find($custId);
@@ -122,6 +127,11 @@ class UserController extends AbstractController
         $em = $doctrine->getManager();
         $userDelete = $em->getRepository(User::class)->find($userId);
         $response = new Response();
+        if (gettype($userId)!='integer') {
+            $response = new Response('Merci d\'entrer un nombre entier en tant qu\'identifiant.');
+            $response->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);
+            return $response;
+        }
 
         try {
             $em->remove($userDelete);

@@ -6,6 +6,7 @@ use App\Entity\Product;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,6 +41,11 @@ class ProductController extends AbstractController
     #[Route('/product/{id}', name: 'details_product', methods: 'GET')]
     public function productDetails(ManagerRegistry $doctrine, $id): JsonResponse
     {
+        if (gettype($id)!='integer') {
+            $response = new JsonResponse('Merci d\'entrer un nombre entier en tant qu\'identifiant.');
+            $response->setStatusCode(Response::HTTP_NOT_ACCEPTABLE);
+            return $response;
+        }
         $em = $doctrine->getManager();
         $selectedProduct = $em->getRepository(Product::class)->find($id);
         $response=$this->json($selectedProduct);
